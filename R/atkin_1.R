@@ -1,3 +1,4 @@
+#'crible d'atkin
 #'@param n Limite supérieure pour notre crible
 #'@returns  La fonction va renvoyer le premier nombres premiers supérieurs à la limite supérieure
 #'@export
@@ -241,62 +242,37 @@ prime_factors_atkin <- function(n){
     factors <- c(factors, remaining)
 
 
-  }
-
   return(factors)
 
 
-}
-#' Trouver le plus petit nombre premier supérieur ou égal à N dans un dataset
-#'
-#' Cette fonction charge un fichier CSV massif, extrait toutes les valeurs
-#' numériques, filtre celles qui sont supérieures ou égales à N, puis
-#' utilise le crible d'Atkin pour trouver le plus petit nombre premier
-#' supérieur ou égal à N parmi les données.
-#'
-#' @param file_path Chemin du fichier CSV contenant les données numériques.
-#' @param N Nombre entier : seuil à partir duquel on cherche un nombre premier.
-#'
-#' @return Le plus petit nombre premier supérieur ou égal à N trouvé dans le dataset.
-#'
-#' @examples
-#' \dontrun{
-#' find_prime_in_dataset("data/nombres.csv", 100000)
-#' }
-#'
-#' @export
-loadin <- function(file_path, N) {
-
-  # 1. Chargement du fichier CSV
-  df <- read.csv(file_path, header = TRUE)
-
-  # 2. Extraction des valeurs numériques dans tout le data frame
-  numeric_values <- unlist(df)
-  numeric_values <- numeric_values[is.numeric(numeric_values)]
-
-  # 3. Ne garder que les valeurs >= N
-  candidates <- numeric_values[numeric_values >= N]
-
-  if (length(candidates) == 0) {
-    stop("Aucune valeur >= N dans le dataset.")
   }
 
-  # 4. On crée une borne supérieure raisonnable pour le crible
-  max_value <- max(candidates)
 
-  # 5. Génération des nombres premiers avec le crible d'Atkin
-  primes_list <- sieve_atkin(max_value)
-
-  # 6. Chercher le plus petit nombre premier >= N présent dans les données
-  primes_candidates <- intersect(candidates, primes_list)
-
-  if (length(primes_candidates) == 0) {
-    stop("Aucun nombre premier >= N trouvé dans le dataset.")
   }
 
-  # 7. Retourner le plus petit
-  return(min(primes_candidates))
+
+#'Genere les paramètres d'une clé RSA Simulée
+#'Simule l'étape de generation de cle RSA pour l 'anonymisation des données médicales
+#'En utilisant le crible d'atkin pour trouver les nombres  premiers p et q
+#'@param n Taille minimale que p et q doivent atteindre
+#'@returns une liste contenant les paramètres (p,q et n)
+#'@export
+pam_rsa_atkin <- function(n){
+  #on liste les nombres premiers
+  premiers <- atkin_list(n)
+  if(length(premiers)<2){
+    return("crible d'atkin n a pas pu trouver assez de nombre premiers veuillez augmenter la taille de N")
+  }
+  #selectionne deux indices distincts
+  indices <- sample(1:length(premiers),2,replace = FALSE)
+  p <- premiers[indices[1]]
+  q <- premiers[indices[2]]
+  # calcul du module n
+  # ce module est la cle publique qui assure la securite des données
+
+  n <- p*q
+
+  message(paste( "generation simulee de la base de la cle RSA reussie:","p=",p,";q=",q,"Module n(cle publique)=",n))
+  return(list(p=p,q=q,module_n=n))
 }
-
-
 

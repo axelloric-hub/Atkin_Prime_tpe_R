@@ -1,16 +1,12 @@
 Package: atkinPrimr2
 Title: implementation du crible d'atkin et outils de hashage
 Version: 0.0.0.9000
-Author: 
-    MAI AXEL LORIC  [aut,cre]
-Maintainer: MAI AXEL LORIC <axelloric@icloud.com >    
-    
+Author: MAI AXEL LORIC  [aut,cre]
+Maintainer: MAI AXEL LORIC <axelloric@icloud.com>    
 Description: Provides tools to compute prime numbers efficiently use using the atkin sieve
              algorithm. Includes functions for generating prime sequence and building hash
              tables based on prime distribution. Designed for educational and performances-focused applications.
-             
 License: MIT + file LICENSE
 Encoding: UTF-8
-imports:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
