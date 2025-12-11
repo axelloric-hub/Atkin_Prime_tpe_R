@@ -1,4 +1,4 @@
-#'crible d'atkin
+#'crible d'atkinit
 #'@param n Limite supérieure pour notre crible
 #'@returns  La fonction va renvoyer le premier nombres premiers supérieurs à la limite supérieure
 #'@export
