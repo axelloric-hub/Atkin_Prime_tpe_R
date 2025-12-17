@@ -15,3 +15,6 @@ un vecteur des facteurs premiers de N
 \description{
 Crible d'atkin
 }
+\examples{
+prime_factors_atkin(100) # Renvoie 2, 2, 5, 5
+}

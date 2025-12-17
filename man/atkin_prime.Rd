@@ -2,7 +2,7 @@
 % Please edit documentation in R/atkin_1.R
 \name{atkin_prime}
 \alias{atkin_prime}
-\title{crible d'atkin}
+\title{crible d'atkinit}
 \usage{
 atkin_prime(limit)
 }
@@ -13,5 +13,5 @@ atkin_prime(limit)
 La fonction va renvoyer le premier nombres premiers supérieurs à la limite supérieure
 }
 \description{
-crible d'atkin
+crible d'atkinit
 }

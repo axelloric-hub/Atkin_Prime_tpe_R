@@ -15,3 +15,7 @@ True si le nombre est premier
 \description{
 Crible d'atkin
 }
+\examples{
+is_prime_atkin(17) # TRUE
+is_prime_atkin(20) # FALSE
+}

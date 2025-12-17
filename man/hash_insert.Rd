@@ -19,3 +19,7 @@ la table mise à jour
 \description{
 Insérer un élément dans la table de hackage
 }
+\examples{
+h <- create_hash(50)
+h <- hash_insert(h, 12345, "Donnée Patient A")
+}

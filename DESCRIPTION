@@ -1,11 +1,15 @@
 Package: atkinPrimr2
-Title: implementation du crible d'atkin et outils de hashage
+Title: Title: RSA Medical Data Anonymization Tools
 Version: 0.0.0.9000
 Author: MAI AXEL LORIC  [aut,cre]
 Maintainer: MAI AXEL LORIC <axelloric@icloud.com>    
-Description: Provides tools to compute prime numbers efficiently use using the atkin sieve
-             algorithm. Includes functions for generating prime sequence and building hash
-             tables based on prime distribution. Designed for educational and performances-focused applications.
+Description: Provides a complete asymmetric encryption pipeline for 
+    anonymizing sensitive medical identifiers. The package implements the 
+    Sieve of Atkin for prime number generation and RSA modular arithmetic 
+    to secure data. It allows users to generate public/private key pairs, 
+    encrypt patient IDs for secure storage, and decrypt them for authorized 
+    clinical analysis.
+Imports: gmp             
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

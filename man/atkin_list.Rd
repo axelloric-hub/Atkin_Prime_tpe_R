@@ -15,3 +15,6 @@ La fonction va renvoyer la list des nombres premiers inférieurs à la limite
 \description{
 Crible d'atkin
 }
+\examples{
+atkin_list(50) # Renvoie 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47
+}

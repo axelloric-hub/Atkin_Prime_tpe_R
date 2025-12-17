@@ -15,3 +15,7 @@ une liste contenant la table (liste), sa taille et la fonction de hachage
 \description{
 Créer une table de hachage optimisée avec un nombre premier
 }
+\examples{
+my_hash <- create_hash(100)
+print(my_hash$size) # Affiche le premier nombre premier > 100
+}

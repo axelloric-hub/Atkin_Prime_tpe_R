@@ -17,3 +17,8 @@ La valeur stockée ou Null si non trouvée
 \description{
 Récupérer un élément dans la table de hackage
 }
+\examples{
+h <- create_hash(50)
+h <- hash_insert(h, 99, "Test")
+hash_get(h, 99)
+}
