@@ -2,18 +2,18 @@
 % Please edit documentation in R/atkin_1.R
 \name{is_prime_atkin}
 \alias{is_prime_atkin}
-\title{Crible d'atkin}
+\title{Check if a number is prime using Sieve of Atkin}
 \usage{
 is_prime_atkin(n)
 }
 \arguments{
-\item{n}{Limite supérieure pour notre crible}
+\item{n}{The integer to check.}
 }
 \value{
-True si le nombre est premier
+Logical TRUE if prime, FALSE otherwise.
 }
 \description{
-Crible d'atkin
+Check if a number is prime using Sieve of Atkin
 }
 \examples{
 is_prime_atkin(17) # TRUE

@@ -1,49 +1,43 @@
-#'crible d'atkinit
-#'@param n Limite supérieure pour notre crible
-#'@returns  La fonction va renvoyer le premier nombres premiers supérieurs à la limite supérieure
-#'@export
-
-
+#' Sieve of Atkin (Find next prime)
+#'
+#' @param limit The upper bound for the search.
+#' @returns The first prime number strictly greater than the limit.
+#' @examples
+#' atkin_prime(10) # Returns 11
+#' atkin_prime(20) # Returns 23
+#' @export
 atkin_prime <- function(limit){
-  #1- tableau des booléens initialisé à False
+  # 1- Boolean array initialized to FALSE
   limite <- 2*limit
-  sieve <- rep(FALSE,limite)
-  # valeur limite de x et y
+  sieve <- rep(FALSE, limite)
   lim <- floor(sqrt(limite))
-  # étapes des " trois équations
 
-
+  # 3 equations of Atkin
   for (x in 1:lim) {
     x2 <- x*x
     for (y in 1:lim) {
       y2 <- y*y
 
       n <- 4*x2+y2
-      if( n<=limite &&(n%% 12== 1 || n%%12 ==5)){
-
+      if( n<=limite && (n%% 12== 1 || n%%12 ==5)){
         sieve[n] <- !sieve[n]
       }
       n <- 3*x2+y2
-      if( n<=limite &&(n%% 12== 7 )){
-
+      if( n<=limite && (n%% 12== 7 )){
         sieve[n] <- !sieve[n]
       }
       if(x2>y2){
         n <- 3*x2-y2
-        if( n<=limite &&(n%% 12== 11 )){
-
+        if( n<=limite && (n%% 12== 11 )){
           sieve[n] <- !sieve[n]
         }
       }
-
     }
-
   }
-  ## elimination des multiples des carrés
+
+  ## Elimination of square multiples
   k <- 1
-
   while( k*k <= limite){
-
     if(sieve[k]){
       j <- k*k
       while( j<=limite){
@@ -54,86 +48,68 @@ atkin_prime <- function(limit){
     k <- k+1
   }
 
-  # 5-Ajouter 2 et 3 , puis récuperons les TRUE
-
+  # 5- Add 2 and 3, then collect TRUE values
   primes <- c(2,3, which(sieve))
   primes <- primes[ primes<=limite]
-  alli <- primes[1]
 
-
-
-  for (  a in 1:length(primes)) {
+  for (a in 1:length(primes)) {
     if( primes[a]>limit){
       return(primes[a])
-
     }
-
   }
-
-
-
-
-
-
-
 }
 
-#' Génération de clés, Chiffrement et Déchiffrement RSA
+#' RSA Key Generation, Encryption, and Decryption
 #'
 #' @description
-#' Simule l'étape de génération de clé RSA pour l'anonymisation des données médicales
-#' en utilisant le crible d'Atkin, puis fournit les outils de cryptage.
+#' Simulates the RSA key generation step for medical data anonymization
+#' using the Sieve of Atkin, then provides tools for encryption.
 #'
-#' @param n_atkin Taille minimale pour la recherche des nombres premiers.
-#' @return Une liste contenant les clés et les paramètres p, q.
+#' @param n_atkin Minimum size for the prime number search.
+#' @return A list containing the public/private keys and parameters p, q.
 #'
 #' @examples
-#' # 1. Générer le système
-#' mon_rsa <- rsa_full_process(1000)
+#' # 1. Generate system keys
+#' my_rsa <- rsa_full_process(1000)
 #'
-#' # 2. Chiffrer un identifiant patient
-#' id_anonyme <- rsa_encrypt(123, mon_rsa$public_key)
-#' print(id_anonyme)
+#' # 2. Encrypt a patient ID
+#' anon_id <- rsa_encrypt(123, my_rsa$public_key)
+#' print(anon_id)
 #'
-#' # 3. Déchiffrer pour retrouver l'original
-#' id_origine <- rsa_decrypt(id_anonyme, mon_rsa$private_key)
-#' print(as.character(id_origine))
+#' # 3. Decrypt to find original
+#' original_id <- rsa_decrypt(anon_id, my_rsa$private_key)
+#' print(as.character(original_id))
 #'
 #' @export
 rsa_full_process <- function(n_atkin) {
   if (!requireNamespace("gmp", quietly = TRUE)) {
-    stop("Le package 'gmp' est nécessaire. Installez-le avec install.packages('gmp')")
+    stop("The 'gmp' package is required. Install it with install.packages('gmp')")
   }
 
-  # --- 1. Utilisation de votre logique (Crible d'Atkin) ---
-  premiers <- atkin_list(n_atkin) # Appel de votre fonction existante
+  # --- 1. Sieve of Atkin logic ---
+  primes <- atkin_list(n_atkin)
 
-  if(length(premiers) < 2) {
-    stop("Le crible d'Atkin n'a pas trouvé assez de nombres premiers. Augmentez n_atkin.")
+  if(length(primes) < 2) {
+    stop("Sieve of Atkin did not find enough primes. Increase n_atkin.")
   }
 
-  indices <- sample(1:length(premiers), 2, replace = FALSE)
-  p <- gmp::as.bigz(premiers[indices[1]])
-  q <- gmp::as.bigz(premiers[indices[2]])
+  indices <- sample(1:length(primes), 2, replace = FALSE)
+  p <- gmp::as.bigz(primes[indices[1]])
+  q <- gmp::as.bigz(primes[indices[2]])
 
-  # --- 2. Calculs RSA ---
-  # Module n
+  # --- 2. RSA Calculations ---
   n <- p * q
-
-  # Indicateur d'Euler phi(n) = (p-1)(q-1)
   phi_n <- (p - 1) * (q - 1)
 
-  # Choix de l'exposant public e (65537 est le standard)
   e <- gmp::as.bigz(65537)
   if (gmp::gcd.bigz(e, phi_n) != 1) {
     e <- gmp::as.bigz(3)
     while (gmp::gcd.bigz(e, phi_n) != 1) { e <- e + 2 }
   }
 
-  # Calcul de l'exposant privé d (inverse modulaire)
   d <- gmp::inv.bigz(e, phi_n)
 
-  message(paste("Génération RSA réussie. Module n =", as.character(n)))
+  message(paste("RSA Generation successful. Module n =", as.character(n)))
 
   return(list(
     p = p,
@@ -144,128 +120,102 @@ rsa_full_process <- function(n_atkin) {
 }
 
 #' @rdname rsa_full_process
-#' @param message_int Un entier (ou bigz) à chiffrer
-#' @param pub_key La clé publique (liste e, n)
+#' @param message_int An integer (or bigz) to encrypt.
+#' @param pub_key Public key (list containing e and n).
 #' @export
 rsa_encrypt <- function(message_int, pub_key) {
-  # Formule : c = m^e mod n
+  # Formula: c = m^e mod n
   gmp::powm(gmp::as.bigz(message_int), pub_key$e, pub_key$n)
 }
 
 #' @rdname rsa_full_process
-#' @param cipher_int L'entier chiffré
-#' @param priv_key La clé privée (liste d, n)
+#' @param cipher_int The encrypted integer.
+#' @param priv_key Private key (list containing d and n).
 #' @export
 rsa_decrypt <- function(cipher_int, priv_key) {
-  # Formule : m = c^d mod n
+  # Formula: m = c^d mod n
   gmp::powm(gmp::as.bigz(cipher_int), priv_key$d, priv_key$n)
 }
-#' Anonymiser une colonne d'identifiants dans un DataFrame
+
+#' Anonymize a column of IDs in a DataFrame
 #'
 #' @description
-#' Applique le chiffrement RSA sur chaque ligne d'une colonne spécifique.
-#' Les résultats sont stockés en chaînes de caractères pour préserver la précision.
+#' Applies RSA encryption to each row of a specific column.
+#' Results are stored as strings to maintain precision.
 #'
-#' @param df Le dataframe contenant les données.
-#' @param column_name Le nom de la colonne à chiffrer (ex: "ID").
-#' @param pub_key La clé publique issue de rsa_full_process.
-#' @return Le dataframe avec la colonne transformée.
-
+#' @param df The dataframe containing the data.
+#' @param column_name Name of the column to encrypt (e.g., "ID").
+#' @param pub_key Public key from rsa_full_process.
+#' @return Dataframe with the transformed column.
 #' @examples
-#' data_med <- data.frame(ID = c(101, 102, 103), Note = c("A", "B", "A"))
+#' data_med <- data.frame(ID = c(101, 102), Note = c("A", "B"))
 #' keys <- rsa_full_process(1000)
 #' data_med <- rsa_encrypt_column(data_med, "ID", keys$public_key)
 #' @export
 rsa_encrypt_column <- function(df, column_name, pub_key) {
-
   df[[column_name]] <- sapply(df[[column_name]], function(x) {
-
     res <- rsa_encrypt(x, pub_key)
-
     return(as.character(res))
   })
-
   return(df)
-
 }
 
-#' Déchiffrer une colonne d'identifiants dans un DataFrame
+#' Decrypt a column of IDs in a DataFrame
 #'
 #' @description
-#' Inverse le processus d'anonymisation pour retrouver les identifiants originaux.
+#' Reverses the anonymization process to retrieve original IDs.
 #'
-#' @param df Le dataframe contenant les données anonymisées.
-#'
-#' @param column_name Le nom de la colonne à déchiffrer.
-#'
-#' @param priv_key La clé privée issue de rsa_full_process.
-#' @return Le dataframe avec la colonne restaurée.
+#' @param df Dataframe with anonymized data.
+#' @param column_name Name of the column to decrypt.
+#' @param priv_key Private key from rsa_full_process.
+#' @return Dataframe with the restored column.
+#' @examples
+#' # Assuming data_med is already encrypted
+#' # data_med <- rsa_decrypt_column(data_med, "ID", keys$private_key)
 #' @export
 rsa_decrypt_column <- function(df, column_name, priv_key) {
-
   df[[column_name]] <- sapply(df[[column_name]], function(x) {
-
-    # On reconvertit le texte en bigz avant de déchiffrer
-
     res <- rsa_decrypt(gmp::as.bigz(x), priv_key)
-
     return(as.numeric(res))
-
   })
-
   return(df)
 }
 
-
-
-#'Crible d'atkin
-#'@param n Limite supérieure pour notre crible
-#'@returns  La fonction va renvoyer la list des nombres premiers inférieurs à la limite
-#'@examples
-#' atkin_list(50) # Renvoie 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47
-#'@export
-
+#' Sieve of Atkin (List generation)
+#'
+#' @param n Upper limit for the sieve.
+#' @returns A vector of prime numbers up to n.
+#' @examples
+#' atkin_list(50) # Returns 2, 3, 5, ..., 47
+#' @export
 atkin_list<- function(n){
-  #1- tableau des booléens initialisé à False
   limit <- n
   sieve <- rep(FALSE,limit)
-  # valeur limite de x et y
   lim <- floor(sqrt(limit))
-  # étapes des " trois équations
 
-  #4x²+y²
   for (x in 1:lim) {
     x2 <- x*x
     for (y in 1:lim) {
       y2 <- y*y
-
-      n <- 4*x2+y2
-      if( n<=limit &&(n%% 12== 1 || n%%12 ==5)){
-
-        sieve[n] <- !sieve[n]
+      n_val <- 4*x2+y2
+      if( n_val<=limit && (n_val%% 12== 1 || n_val%%12 ==5)){
+        sieve[n_val] <- !sieve[n_val]
       }
-      #3x²+y²
-      n <- 3*x2+y2
-      if( n<=limit &&(n%% 12== 7 )){
-
-        sieve[n] <- !sieve[n]
+      n_val <- 3*x2+y2
+      if( n_val<=limit && (n_val%% 12== 7 )){
+        sieve[n_val] <- !sieve[n_val]
       }
       if(x2>y2){
-        #3x²-y²
-        n <- 3*x2-y2
-        if( n<=limit &&(n%% 12== 11 )){
-
-          sieve[n] <- !sieve[n]
+        n_val <- 3*x2-y2
+        if( n_val<=limit && (n_val%% 12== 11 )){
+          sieve[n_val] <- !sieve[n_val]
         }
       }
-
     }
-
   }
-  #elimination des multiples des carrés
+
   k <- 1
   while( k*k <= limit){
-
     if(sieve[k]){
       j <- k*k
       while( j<=limit){
@@ -276,135 +226,97 @@ atkin_list<- function(n){
     k <- k+1
   }
 
-  # 5-Ajouter 2 et 3 , puis récuperons les TRUE
-
   primes <- c(2,3, which(sieve))
   primes <- primes[ primes<=limit]
-
   return(primes)
-
-
-
 }
 
-#'Crible d'atkin
-#'@param n Limite supérieure pour notre crible
-#'@returns  True si le nombre est premier
+#' Check if a number is prime using Sieve of Atkin
+#'
+#' @param n The integer to check.
+#' @returns Logical TRUE if prime, FALSE otherwise.
 #' @examples
 #' is_prime_atkin(17) # TRUE
 #' is_prime_atkin(20) # FALSE
-#'@export
+#' @export
 is_prime_atkin <- function(n){
-  if(n<2){
-    return(FALSE)
-  }
-  if(n==2 || n==3){
-    return(TRUE)
-  }
+  if(n<2) return(FALSE)
+  if(n==2 || n==3) return(TRUE)
 
   m <- n-1
-  f <-  atkin_prime(m) # on utilise la fonction atkin_prime qui renvoie directement le premier nombres premiers supérieures
-  if(f==n){
-    return(TRUE)
-  }else{
-    return(FALSE)
-  }
-
+  f <- atkin_prime(m)
+  if(f == n) return(TRUE) else return(FALSE)
 }
-#'Crible d'atkin
-#'@param n un entier supérieur à 1
-#'@returns  un vecteur des facteurs premiers de N
-#' @examples
-#' prime_factors_atkin(100) # Renvoie 2, 2, 5, 5
-#'@export
-prime_factors_atkin <- function(n){
-  if(is_prime_atkin(n) ){
-    return("c est un nombre premier")
 
-  }
+#' Prime Factorization using Sieve of Atkin
+#'
+#' @param n An integer greater than 1.
+#' @returns A vector of prime factors.
+#' @examples
+#' prime_factors_atkin(100) # Returns 2, 2, 5, 5
+#' @export
+prime_factors_atkin <- function(n){
+  if(is_prime_atkin(n)) return(n)
+
   factors <- c()
   remaining <- n
-  #Générer tous les nombres premiers jusqu'à sqrt(n)
   limit <- floor(sqrt(n))+1
   liste <- atkin_list(limit)
+
   for( p in liste){
-    while(remaining %% p ==0){
-      factors <- c(factors,p)
+    while(remaining %% p == 0){
+      factors <- c(factors, p)
       remaining <- remaining/p
     }
-    if(remaining==1) break
+    if(remaining == 1) break
   }
-  if (remaining> 1){
-    factors <- c(factors, remaining)
-
-
-    return(factors)
-
-
-  }
-
-
+  if (remaining > 1) factors <- c(factors, remaining)
+  return(factors)
 }
 
-
-
-
-
-
-#' Créer une table de hachage optimisée avec un nombre premier
-#' @param n limite supérieure pour la taille de la table, la taille finale sera le premier nombre premier > limit
-
-#' @returns une liste contenant la table (liste), sa taille et la fonction de hachage
+#' Create an Optimized Hash Table
+#'
+#' @param limit Upper limit for the table size; actual size will be the next prime > limit.
+#' @returns A list containing the table, its size, and the hash function.
 #' @examples
 #' my_hash <- create_hash(100)
-#' print(my_hash$size) # Affiche le premier nombre premier > 100
+#' print(my_hash$size) # Next prime after 100
 #' @export
 create_hash <- function(limit){
-  # fonction qui renvoie le premier nombre premier supérieur à la limite
   size <- atkin_prime(limit)
   table <- vector("list", size)
-  #fonction de hachage simple
   hash_fun <- function(key){
-   ( key %%  size)+1
+    ( key %%  size)+1
   }
-  list(
-
-    table= table,
-    size= size,
-    hash =hash_fun
-  )
-
+  list(table=table, size=size, hash=hash_fun)
 }
 
-#' Insérer un élément dans la table de hackage
+#' Insert an element into the Hash Table
 #'
-#' @param h la table de hackage créée avec create_hash()
-#' @param key la clé numérique
-#' @param value la valeur à stocker
-#' @returns la table mise à jour
+#' @param h The hash table created with create_hash().
+#' @param key Numeric key.
+#' @param value The value to store.
+#' @returns The updated hash table.
 #' @examples
 #' h <- create_hash(50)
-#' h <- hash_insert(h, 12345, "Donnée Patient A")
+#' h <- hash_insert(h, 123, "Patient Data")
 #' @export
 hash_insert <- function( h, key, value){
   index <- h$hash(key)
   h$table[[index]] <- value
   h
 }
-#' Récupérer un élément dans la table de hackage
+
+#' Retrieve an element from the Hash Table
 #'
-#' @param h la table de hackage créée avec create_hash()
-#' @param key la clé numérique
-#' @returns La valeur stockée ou Null si non trouvée
+#' @param h The hash table.
+#' @param key Numeric key.
+#' @returns The stored value or NULL if not found.
 #' @examples
 #' h <- create_hash(50)
-#' h <- hash_insert(h, 99, "Test")
+#' h <- hash_insert(h, 99, "Test Value")
 #' hash_get(h, 99)
 #' @export
 hash_get <- function(h, key){
   h$table[[h$hash(key)]]
 }
-
-
-
-

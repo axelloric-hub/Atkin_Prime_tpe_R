@@ -2,20 +2,20 @@
 % Please edit documentation in R/atkin_1.R
 \name{create_hash}
 \alias{create_hash}
-\title{Créer une table de hachage optimisée avec un nombre premier}
+\title{Create an Optimized Hash Table}
 \usage{
 create_hash(limit)
 }
 \arguments{
-\item{n}{limite supérieure pour la taille de la table, la taille finale sera le premier nombre premier > limit}
+\item{limit}{Upper limit for the table size; actual size will be the next prime > limit.}
 }
 \value{
-une liste contenant la table (liste), sa taille et la fonction de hachage
+A list containing the table, its size, and the hash function.
 }
 \description{
-Créer une table de hachage optimisée avec un nombre premier
+Create an Optimized Hash Table
 }
 \examples{
 my_hash <- create_hash(100)
-print(my_hash$size) # Affiche le premier nombre premier > 100
+print(my_hash$size) # Next prime after 100
 }

@@ -4,7 +4,7 @@
 \alias{rsa_full_process}
 \alias{rsa_encrypt}
 \alias{rsa_decrypt}
-\title{Génération de clés, Chiffrement et Déchiffrement RSA}
+\title{RSA Key Generation, Encryption, and Decryption}
 \usage{
 rsa_full_process(n_atkin)
 
@@ -13,33 +13,33 @@ rsa_encrypt(message_int, pub_key)
 rsa_decrypt(cipher_int, priv_key)
 }
 \arguments{
-\item{n_atkin}{Taille minimale pour la recherche des nombres premiers.}
+\item{n_atkin}{Minimum size for the prime number search.}
 
-\item{message_int}{Un entier (ou bigz) à chiffrer}
+\item{message_int}{An integer (or bigz) to encrypt.}
 
-\item{pub_key}{La clé publique (liste e, n)}
+\item{pub_key}{Public key (list containing e and n).}
 
-\item{cipher_int}{L'entier chiffré}
+\item{cipher_int}{The encrypted integer.}
 
-\item{priv_key}{La clé privée (liste d, n)}
+\item{priv_key}{Private key (list containing d and n).}
 }
 \value{
-Une liste contenant les clés et les paramètres p, q.
+A list containing the public/private keys and parameters p, q.
 }
 \description{
-Simule l'étape de génération de clé RSA pour l'anonymisation des données médicales
-en utilisant le crible d'Atkin, puis fournit les outils de cryptage.
+Simulates the RSA key generation step for medical data anonymization
+using the Sieve of Atkin, then provides tools for encryption.
 }
 \examples{
-# 1. Générer le système
-mon_rsa <- rsa_full_process(1000)
+# 1. Generate system keys
+my_rsa <- rsa_full_process(1000)
 
-# 2. Chiffrer un identifiant patient
-id_anonyme <- rsa_encrypt(123, mon_rsa$public_key)
-print(id_anonyme)
+# 2. Encrypt a patient ID
+anon_id <- rsa_encrypt(123, my_rsa$public_key)
+print(anon_id)
 
-# 3. Déchiffrer pour retrouver l'original
-id_origine <- rsa_decrypt(id_anonyme, mon_rsa$private_key)
-print(as.character(id_origine))
+# 3. Decrypt to find original
+original_id <- rsa_decrypt(anon_id, my_rsa$private_key)
+print(as.character(original_id))
 
 }

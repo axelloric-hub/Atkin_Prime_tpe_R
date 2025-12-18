@@ -2,24 +2,24 @@
 % Please edit documentation in R/atkin_1.R
 \name{hash_insert}
 \alias{hash_insert}
-\title{Insérer un élément dans la table de hackage}
+\title{Insert an element into the Hash Table}
 \usage{
 hash_insert(h, key, value)
 }
 \arguments{
-\item{h}{la table de hackage créée avec create_hash()}
+\item{h}{The hash table created with create_hash().}
 
-\item{key}{la clé numérique}
+\item{key}{Numeric key.}
 
-\item{value}{la valeur à stocker}
+\item{value}{The value to store.}
 }
 \value{
-la table mise à jour
+The updated hash table.
 }
 \description{
-Insérer un élément dans la table de hackage
+Insert an element into the Hash Table
 }
 \examples{
 h <- create_hash(50)
-h <- hash_insert(h, 12345, "Donnée Patient A")
+h <- hash_insert(h, 123, "Patient Data")
 }

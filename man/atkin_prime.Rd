@@ -2,16 +2,20 @@
 % Please edit documentation in R/atkin_1.R
 \name{atkin_prime}
 \alias{atkin_prime}
-\title{crible d'atkinit}
+\title{Sieve of Atkin (Find next prime)}
 \usage{
 atkin_prime(limit)
 }
 \arguments{
-\item{n}{Limite supérieure pour notre crible}
+\item{limit}{The upper bound for the search.}
 }
 \value{
-La fonction va renvoyer le premier nombres premiers supérieurs à la limite supérieure
+The first prime number strictly greater than the limit.
 }
 \description{
-crible d'atkinit
+Sieve of Atkin (Find next prime)
+}
+\examples{
+atkin_prime(10) # Returns 11
+atkin_prime(20) # Returns 23
 }

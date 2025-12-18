@@ -2,20 +2,24 @@
 % Please edit documentation in R/atkin_1.R
 \name{rsa_decrypt_column}
 \alias{rsa_decrypt_column}
-\title{Déchiffrer une colonne d'identifiants dans un DataFrame}
+\title{Decrypt a column of IDs in a DataFrame}
 \usage{
 rsa_decrypt_column(df, column_name, priv_key)
 }
 \arguments{
-\item{df}{Le dataframe contenant les données anonymisées.}
+\item{df}{Dataframe with anonymized data.}
 
-\item{column_name}{Le nom de la colonne à déchiffrer.}
+\item{column_name}{Name of the column to decrypt.}
 
-\item{priv_key}{La clé privée issue de rsa_full_process.}
+\item{priv_key}{Private key from rsa_full_process.}
 }
 \value{
-Le dataframe avec la colonne restaurée.
+Dataframe with the restored column.
 }
 \description{
-Inverse le processus d'anonymisation pour retrouver les identifiants originaux.
+Reverses the anonymization process to retrieve original IDs.
+}
+\examples{
+# Assuming data_med is already encrypted
+# data_med <- rsa_decrypt_column(data_med, "ID", keys$private_key)
 }

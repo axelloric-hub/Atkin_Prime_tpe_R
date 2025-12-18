@@ -2,23 +2,23 @@
 % Please edit documentation in R/atkin_1.R
 \name{hash_get}
 \alias{hash_get}
-\title{Récupérer un élément dans la table de hackage}
+\title{Retrieve an element from the Hash Table}
 \usage{
 hash_get(h, key)
 }
 \arguments{
-\item{h}{la table de hackage créée avec create_hash()}
+\item{h}{The hash table.}
 
-\item{key}{la clé numérique}
+\item{key}{Numeric key.}
 }
 \value{
-La valeur stockée ou Null si non trouvée
+The stored value or NULL if not found.
 }
 \description{
-Récupérer un élément dans la table de hackage
+Retrieve an element from the Hash Table
 }
 \examples{
 h <- create_hash(50)
-h <- hash_insert(h, 99, "Test")
+h <- hash_insert(h, 99, "Test Value")
 hash_get(h, 99)
 }

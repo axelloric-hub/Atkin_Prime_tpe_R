@@ -2,19 +2,19 @@
 % Please edit documentation in R/atkin_1.R
 \name{prime_factors_atkin}
 \alias{prime_factors_atkin}
-\title{Crible d'atkin}
+\title{Prime Factorization using Sieve of Atkin}
 \usage{
 prime_factors_atkin(n)
 }
 \arguments{
-\item{n}{un entier supérieur à 1}
+\item{n}{An integer greater than 1.}
 }
 \value{
-un vecteur des facteurs premiers de N
+A vector of prime factors.
 }
 \description{
-Crible d'atkin
+Prime Factorization using Sieve of Atkin
 }
 \examples{
-prime_factors_atkin(100) # Renvoie 2, 2, 5, 5
+prime_factors_atkin(100) # Returns 2, 2, 5, 5
 }

@@ -2,26 +2,26 @@
 % Please edit documentation in R/atkin_1.R
 \name{rsa_encrypt_column}
 \alias{rsa_encrypt_column}
-\title{Anonymiser une colonne d'identifiants dans un DataFrame}
+\title{Anonymize a column of IDs in a DataFrame}
 \usage{
 rsa_encrypt_column(df, column_name, pub_key)
 }
 \arguments{
-\item{df}{Le dataframe contenant les données.}
+\item{df}{The dataframe containing the data.}
 
-\item{column_name}{Le nom de la colonne à chiffrer (ex: "ID").}
+\item{column_name}{Name of the column to encrypt (e.g., "ID").}
 
-\item{pub_key}{La clé publique issue de rsa_full_process.}
+\item{pub_key}{Public key from rsa_full_process.}
 }
 \value{
-Le dataframe avec la colonne transformée.
+Dataframe with the transformed column.
 }
 \description{
-Applique le chiffrement RSA sur chaque ligne d'une colonne spécifique.
-Les résultats sont stockés en chaînes de caractères pour préserver la précision.
+Applies RSA encryption to each row of a specific column.
+Results are stored as strings to maintain precision.
 }
 \examples{
-data_med <- data.frame(ID = c(101, 102, 103), Note = c("A", "B", "A"))
+data_med <- data.frame(ID = c(101, 102), Note = c("A", "B"))
 keys <- rsa_full_process(1000)
 data_med <- rsa_encrypt_column(data_med, "ID", keys$public_key)
 }

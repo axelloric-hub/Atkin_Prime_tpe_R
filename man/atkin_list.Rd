@@ -2,19 +2,19 @@
 % Please edit documentation in R/atkin_1.R
 \name{atkin_list}
 \alias{atkin_list}
-\title{Crible d'atkin}
+\title{Sieve of Atkin (List generation)}
 \usage{
 atkin_list(n)
 }
 \arguments{
-\item{n}{Limite supérieure pour notre crible}
+\item{n}{Upper limit for the sieve.}
 }
 \value{
-La fonction va renvoyer la list des nombres premiers inférieurs à la limite
+A vector of prime numbers up to n.
 }
 \description{
-Crible d'atkin
+Sieve of Atkin (List generation)
 }
 \examples{
-atkin_list(50) # Renvoie 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47
+atkin_list(50) # Returns 2, 3, 5, ..., 47
 }
