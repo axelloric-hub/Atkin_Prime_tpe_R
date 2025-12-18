@@ -160,6 +160,63 @@ rsa_decrypt <- function(cipher_int, priv_key) {
   # Formule : m = c^d mod n
   gmp::powm(gmp::as.bigz(cipher_int), priv_key$d, priv_key$n)
 }
+#' Anonymiser une colonne d'identifiants dans un DataFrame
+#'
+#' @description
+#' Applique le chiffrement RSA sur chaque ligne d'une colonne spécifique.
+#' Les résultats sont stockés en chaînes de caractères pour préserver la précision.
+#'
+#' @param df Le dataframe contenant les données.
+#' @param column_name Le nom de la colonne à chiffrer (ex: "ID").
+#' @param pub_key La clé publique issue de rsa_full_process.
+#' @return Le dataframe avec la colonne transformée.
+
+#' @examples
+#' data_med <- data.frame(ID = c(101, 102, 103), Note = c("A", "B", "A"))
+#' keys <- rsa_full_process(1000)
+#' data_med <- rsa_encrypt_column(data_med, "ID", keys$public_key)
+#' @export
+rsa_encrypt_column <- function(df, column_name, pub_key) {
+
+  df[[column_name]] <- sapply(df[[column_name]], function(x) {
+
+    res <- rsa_encrypt(x, pub_key)
+
+    return(as.character(res))
+  })
+
+  return(df)
+
+}
+
+#' Déchiffrer une colonne d'identifiants dans un DataFrame
+#'
+#' @description
+#' Inverse le processus d'anonymisation pour retrouver les identifiants originaux.
+#'
+#' @param df Le dataframe contenant les données anonymisées.
+#'
+#' @param column_name Le nom de la colonne à déchiffrer.
+#'
+#' @param priv_key La clé privée issue de rsa_full_process.
+#' @return Le dataframe avec la colonne restaurée.
+#' @export
+rsa_decrypt_column <- function(df, column_name, priv_key) {
+
+  df[[column_name]] <- sapply(df[[column_name]], function(x) {
+
+    # On reconvertit le texte en bigz avant de déchiffrer
+
+    res <- rsa_decrypt(gmp::as.bigz(x), priv_key)
+
+    return(as.numeric(res))
+
+  })
+
+  return(df)
+}
+
+
 
 #'Crible d'atkin
 #'@param n Limite supérieure pour notre crible
