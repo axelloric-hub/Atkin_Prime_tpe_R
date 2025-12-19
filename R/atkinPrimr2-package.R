@@ -1,0 +1,29 @@
+#' atkinPrimr2: A Package for Medical Data Anonymization
+#'
+#' This package provides a complete pipeline to anonymize medical datasets
+#' using the Sieve of Atkin for prime number generation and RSA for
+#' secure encryption of patient identifiers.
+#'
+#' @section Main Functions:
+#' The package includes several key functions:
+#' @section Main Functions:
+#' \itemize{
+#'   \item \code{\link{atkin_list}}: Generates a vector of all prime numbers up to a specified limit using the Sieve of Atkin.
+#'   \item \code{\link{atkin_prime}}: Finds the first prime number strictly greater than a given limit.
+#'   \item \code{\link{is_prime_atkin}}: Checks if a specific integer is a prime number using the Atkin algorithm logic.
+#'   \item \code{\link{prime_factors_atkin}}: Performs prime factorization of an integer using a pre-generated list of Atkin primes.
+#'   \item \code{\link{rsa_full_process}}: Complete RSA setup that generates public and private keys using Atkin-generated primes.
+#'   \item \code{\link{rsa_encrypt}}: Low-level function to encrypt an integer using an RSA public key.
+#'   \item \code{\link{rsa_decrypt}}: Low-level function to decrypt an RSA-encrypted integer using a private key.
+#'   \item \code{\link{rsa_encrypt_column}}: Anonymizes a specific column in a data frame by applying RSA encryption to each row.
+#'   \item \code{\link{rsa_decrypt_column}}: Restores original values in a data frame column using RSA decryption.
+#'   \item \code{\link{rsa_encode_csv}}: Reads a CSV file, encrypts a target column, and saves the anonymized data to a new file.
+#'   \item \code{\link{rsa_decrypt_csv}}: Reads an encrypted CSV file and restores the original data column to a new file.
+#'   \item \code{\link{create_hash}}: Initializes an optimized hash table with a size based on the next Atkin prime.
+#'   \item \code{\link{hash_insert}}: Inserts a key-value pair into the optimized hash table.
+#'   \item \code{\link{hash_get}}: Retrieves a stored value from the hash table using its numeric key.
+#' }
+#'
+#' @docType package
+#' @name atkinPrimr2
+NULL
