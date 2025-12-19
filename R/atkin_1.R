@@ -1,3 +1,52 @@
+#' Sieve of Atkin (List generation)
+#'
+#' @param n Upper limit for the sieve.
+#' @returns A vector of prime numbers up to n.
+#' @examples
+#' atkin_list(50) # Returns 2, 3, 5, ..., 47
+#' @export
+atkin_list<- function(n){
+  limit <- n
+  sieve <- rep(FALSE,limit)
+  lim <- floor(sqrt(limit))
+
+  for (x in 1:lim) {
+    x2 <- x*x
+    for (y in 1:lim) {
+      y2 <- y*y
+      n_val <- 4*x2+y2
+      if( n_val<=limit && (n_val%% 12== 1 || n_val%%12 ==5)){
+        sieve[n_val] <- !sieve[n_val]
+      }
+      n_val <- 3*x2+y2
+      if( n_val<=limit && (n_val%% 12== 7 )){
+        sieve[n_val] <- !sieve[n_val]
+      }
+      if(x2>y2){
+        n_val <- 3*x2-y2
+        if( n_val<=limit && (n_val%% 12== 11 )){
+          sieve[n_val] <- !sieve[n_val]
+        }
+      }
+    }
+  }
+
+  k <- 1
+  while( k*k <= limit){
+    if(sieve[k]){
+      j <- k*k
+      while( j<=limit){
+        sieve[j] <- FALSE
+        j <- j+k*k
+      }
+    }
+    k <- k+1
+  }
+
+  primes <- c(2,3, which(sieve))
+  primes <- primes[ primes<=limit]
+  return(primes)
+}
 #' Sieve of Atkin (Find next prime)
 #'
 #' @param limit The upper bound for the search.
@@ -180,56 +229,76 @@ rsa_decrypt_column <- function(df, column_name, priv_key) {
   })
   return(df)
 }
-
-#' Sieve of Atkin (List generation)
+#' Encrypt a CSV file column using RSA
 #'
-#' @param n Upper limit for the sieve.
-#' @returns A vector of prime numbers up to n.
+#' @description
+#' Reads a CSV file, encrypts a specific column (e.g., Patient IDs) using an RSA public key,
+#' and saves the result to a new CSV file.
+#'
+#' @param chemin_1 Path to the input CSV file.
+#' @param column_name Name of the column to encrypt.
+#' @param chemin_2 Path where the encrypted CSV will be saved.
+#' @param public_key The RSA public key from rsa_full_process.
+#'
 #' @examples
-#' atkin_list(50) # Returns 2, 3, 5, ..., 47
+#' # keys <- rsa_full_process(1000)
+#' # rsa_encode_csv("patients.csv", "ID", "patients_anon.csv", keys$public_key)
 #' @export
-atkin_list<- function(n){
-  limit <- n
-  sieve <- rep(FALSE,limit)
-  lim <- floor(sqrt(limit))
+rsa_encode_csv <- function(chemin_1, column_name, chemin_2, public_key) {
+  # 1. Read the input file
+  # Defaulting to semicolon separator as per your draft, adjust to "," if needed
+  if (!file.exists(chemin_1)) stop("Input file does not exist.")
+  data_med <- read.csv(chemin_1, sep = ";", stringsAsFactors = FALSE)
 
-  for (x in 1:lim) {
-    x2 <- x*x
-    for (y in 1:lim) {
-      y2 <- y*y
-      n_val <- 4*x2+y2
-      if( n_val<=limit && (n_val%% 12== 1 || n_val%%12 ==5)){
-        sieve[n_val] <- !sieve[n_val]
-      }
-      n_val <- 3*x2+y2
-      if( n_val<=limit && (n_val%% 12== 7 )){
-        sieve[n_val] <- !sieve[n_val]
-      }
-      if(x2>y2){
-        n_val <- 3*x2-y2
-        if( n_val<=limit && (n_val%% 12== 11 )){
-          sieve[n_val] <- !sieve[n_val]
-        }
-      }
-    }
-  }
+  # 2. Encrypt the specified column
+  # Reuses the rsa_encrypt_column function defined earlier
+  data_med <- rsa_encrypt_column(data_med, column_name, public_key)
 
-  k <- 1
-  while( k*k <= limit){
-    if(sieve[k]){
-      j <- k*k
-      while( j<=limit){
-        sieve[j] <- FALSE
-        j <- j+k*k
-      }
-    }
-    k <- k+1
-  }
+  # 3. Write the encrypted file
+  # row.names = FALSE prevents adding an unnecessary index column
+  write.csv(data_med, chemin_2, row.names = FALSE)
 
-  primes <- c(2,3, which(sieve))
-  primes <- primes[ primes<=limit]
-  return(primes)
+  message(paste("Encrypted file successfully saved to:", chemin_2))
 }
+
+#' Decrypt a CSV file column using RSA
+#'
+#' @description
+#' Reads an encrypted CSV file, decrypts a specific column using an RSA private key,
+#' and saves the restored data to a new CSV file.
+#'
+#' @param chemin_1 Path to the encrypted input CSV file.
+#' @param column_name Name of the column to decrypt.
+#' @param chemin_2 Path where the decrypted CSV will be saved.
+#' @param private_key The RSA private key from rsa_full_process.
+#'
+#' @examples
+#' # keys <- rsa_full_process(1000)
+#' # rsa_decrypt_csv("patients_anon.csv", "ID", "patients_restored.csv", keys$private_key)
+#' @export
+rsa_decrypt_csv <- function(chemin_1, column_name, chemin_2, private_key) {
+  # 1. Read the encrypted file
+  # Note: read.csv defaults to "," which matches write.csv output
+  if (!file.exists(chemin_1)) stop("Input file does not exist.")
+  data_med <- read.csv(chemin_1, stringsAsFactors = FALSE)
+
+  # Check if the target column exists in the dataframe
+  if (!(column_name %in% names(data_med))) {
+    stop(paste("Column", column_name, "not found in the CSV file."))
+  }
+
+  # 2. Decrypt the specified column
+  # Uses the rsa_decrypt_column function for the restoration process
+  data_med <- rsa_decrypt_column(data_med, column_name, private_key)
+
+  # 3. Write the restored file
+  write.csv(data_med, chemin_2, row.names = FALSE)
+
+  message(paste("Decrypted file successfully saved to:", chemin_2))
+}
+
+
+
 
 #' Check if a number is prime using Sieve of Atkin
 #'
@@ -319,71 +388,4 @@ hash_insert <- function( h, key, value){
 #' @export
 hash_get <- function(h, key){
   h$table[[h$hash(key)]]
-}
-#' Encrypt a CSV file column using RSA
-#'
-#' @description
-#' Reads a CSV file, encrypts a specific column (e.g., Patient IDs) using an RSA public key,
-#' and saves the result to a new CSV file.
-#'
-#' @param chemin_1 Path to the input CSV file.
-#' @param column_name Name of the column to encrypt.
-#' @param chemin_2 Path where the encrypted CSV will be saved.
-#' @param public_key The RSA public key from rsa_full_process.
-#'
-#' @examples
-#' # keys <- rsa_full_process(1000)
-#' # rsa_encode_csv("patients.csv", "ID", "patients_anon.csv", keys$public_key)
-#' @export
-rsa_encode_csv <- function(chemin_1, column_name, chemin_2, public_key) {
-  # 1. Read the input file
-  # Defaulting to semicolon separator as per your draft, adjust to "," if needed
-  if (!file.exists(chemin_1)) stop("Input file does not exist.")
-  data_med <- read.csv(chemin_1, sep = ";", stringsAsFactors = FALSE)
-
-  # 2. Encrypt the specified column
-  # Reuses the rsa_encrypt_column function defined earlier
-  data_med <- rsa_encrypt_column(data_med, column_name, public_key)
-
-  # 3. Write the encrypted file
-  # row.names = FALSE prevents adding an unnecessary index column
-  write.csv(data_med, chemin_2, row.names = FALSE)
-
-  message(paste("Encrypted file successfully saved to:", chemin_2))
-}
-
-#' Decrypt a CSV file column using RSA
-#'
-#' @description
-#' Reads an encrypted CSV file, decrypts a specific column using an RSA private key,
-#' and saves the restored data to a new CSV file.
-#'
-#' @param chemin_1 Path to the encrypted input CSV file.
-#' @param column_name Name of the column to decrypt.
-#' @param chemin_2 Path where the decrypted CSV will be saved.
-#' @param private_key The RSA private key from rsa_full_process.
-#'
-#' @examples
-#' # keys <- rsa_full_process(1000)
-#' # rsa_decrypt_csv("patients_anon.csv", "ID", "patients_restored.csv", keys$private_key)
-#' @export
-rsa_decrypt_csv <- function(chemin_1, column_name, chemin_2, private_key) {
-  # 1. Read the encrypted file
-  # Note: read.csv defaults to "," which matches write.csv output
-  if (!file.exists(chemin_1)) stop("Input file does not exist.")
-  data_med <- read.csv(chemin_1, stringsAsFactors = FALSE)
-
-  # Check if the target column exists in the dataframe
-  if (!(column_name %in% names(data_med))) {
-    stop(paste("Column", column_name, "not found in the CSV file."))
-  }
-
-  # 2. Decrypt the specified column
-  # Uses the rsa_decrypt_column function for the restoration process
-  data_med <- rsa_decrypt_column(data_med, column_name, private_key)
-
-  # 3. Write the restored file
-  write.csv(data_med, chemin_2, row.names = FALSE)
-
-  message(paste("Decrypted file successfully saved to:", chemin_2))
 }
