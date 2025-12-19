@@ -320,3 +320,70 @@ hash_insert <- function( h, key, value){
 hash_get <- function(h, key){
   h$table[[h$hash(key)]]
 }
+#' Encrypt a CSV file column using RSA
+#'
+#' @description
+#' Reads a CSV file, encrypts a specific column (e.g., Patient IDs) using an RSA public key,
+#' and saves the result to a new CSV file.
+#'
+#' @param chemin_1 Path to the input CSV file.
+#' @param column_name Name of the column to encrypt.
+#' @param chemin_2 Path where the encrypted CSV will be saved.
+#' @param public_key The RSA public key from rsa_full_process.
+#'
+#' @examples
+#' # keys <- rsa_full_process(1000)
+#' # rsa_encode_csv("patients.csv", "ID", "patients_anon.csv", keys$public_key)
+#' @export
+rsa_encode_csv <- function(chemin_1, column_name, chemin_2, public_key) {
+  # 1. Read the input file
+  # Defaulting to semicolon separator as per your draft, adjust to "," if needed
+  if (!file.exists(chemin_1)) stop("Input file does not exist.")
+  data_med <- read.csv(chemin_1, sep = ";", stringsAsFactors = FALSE)
+
+  # 2. Encrypt the specified column
+  # Reuses the rsa_encrypt_column function defined earlier
+  data_med <- rsa_encrypt_column(data_med, column_name, public_key)
+
+  # 3. Write the encrypted file
+  # row.names = FALSE prevents adding an unnecessary index column
+  write.csv(data_med, chemin_2, row.names = FALSE)
+
+  message(paste("Encrypted file successfully saved to:", chemin_2))
+}
+
+#' Decrypt a CSV file column using RSA
+#'
+#' @description
+#' Reads an encrypted CSV file, decrypts a specific column using an RSA private key,
+#' and saves the restored data to a new CSV file.
+#'
+#' @param chemin_1 Path to the encrypted input CSV file.
+#' @param column_name Name of the column to decrypt.
+#' @param chemin_2 Path where the decrypted CSV will be saved.
+#' @param private_key The RSA private key from rsa_full_process.
+#'
+#' @examples
+#' # keys <- rsa_full_process(1000)
+#' # rsa_decrypt_csv("patients_anon.csv", "ID", "patients_restored.csv", keys$private_key)
+#' @export
+rsa_decrypt_csv <- function(chemin_1, column_name, chemin_2, private_key) {
+  # 1. Read the encrypted file
+  # Note: read.csv defaults to "," which matches write.csv output
+  if (!file.exists(chemin_1)) stop("Input file does not exist.")
+  data_med <- read.csv(chemin_1, stringsAsFactors = FALSE)
+
+  # Check if the target column exists in the dataframe
+  if (!(column_name %in% names(data_med))) {
+    stop(paste("Column", column_name, "not found in the CSV file."))
+  }
+
+  # 2. Decrypt the specified column
+  # Uses the rsa_decrypt_column function for the restoration process
+  data_med <- rsa_decrypt_column(data_med, column_name, private_key)
+
+  # 3. Write the restored file
+  write.csv(data_med, chemin_2, row.names = FALSE)
+
+  message(paste("Decrypted file successfully saved to:", chemin_2))
+}
